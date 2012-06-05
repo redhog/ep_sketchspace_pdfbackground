@@ -1,0 +1,13 @@
+{
+  "parts": [
+    {
+      "name": "sketchspace",
+      "client_hooks": {
+        "sketchSpaceDesigner_designer_DesignerUI_ToolbarAdd": "ep_sketchspace_pdfbackground/static/js/hooks:sketchSpaceDesigner_designer_DesignerUI_ToolbarAdd",
+        "sketchSpaceDesigner_designer_DesignerUI_startup": "ep_sketchspace_pdfbackground/static/js/hooks:sketchSpaceDesigner_designer_DesignerUI_startup",
+        "sketchspaceDeserializeShape_zimage": "ep_sketchspace_pdfbackground/static/js/hooks:sketchspaceDeserializeShape_zimage",
+        "sketchspaceSerializeShape_zimage": "ep_sketchspace_pdfbackground/static/js/hooks:sketchspaceSerializeShape_zimage"
+      }
+    }
+  ]
+}

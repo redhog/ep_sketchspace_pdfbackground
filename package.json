@@ -1,0 +1,9 @@
+{
+  "name": "ep_sketchspace_pdfbackground",
+  "description": "Add image/pdf annotation functionality to SketchSpace",
+  "version": "0.0.6",
+  "author": "RedHog (Egil Moeller) <egil.moller@freecode.no>",
+  "contributors": [],
+  "dependencies": {"ep_imageconvert": ">= 0.0.1", "ep_fileupload": ">= 0.0.3"},
+  "engines": { "node": ">= 0.4.1 < 0.7.0" }
+}
