@@ -1,35 +1,77 @@
-/*
-dojo.require("sketchSpaceDesigner.designer.bbox");
-dojo.require("dojox.gfx.utils");
-dojo.require("dojox.gfx.matrix");
-*/
-
-exports.sketchSpaceDesigner_designer_DesignerUI_ToolbarAdd = function (hook_name, args, cb) {
-    return cb([
-      '<li id="addImage" dojoAttachPoint="addImgButton">' +
-      '  <a title="Add image"><span class="buttonicon buttonicon-addimage"></span></a>' +
-      '</li>'
-    ]);
-}
+var padeditor = require('ep_etherpad-lite/static/js/pad_editor').padeditor;
 
 exports.sketchSpaceDesigner_designer_DesignerUI_startup = function (hook_name, args, cb) {
-  if (typeof(AjaxUpload) != "undefined") {
+  dojo.require("sketchSpaceDesigner.designer.bbox");
+  dojo.require("dojox.gfx.utils");
+  dojo.require("dojox.gfx.matrix");
+
+  dojo.declare("ep_sketchspace_pdfbackground.DesignerUIMenuAddTools", [dijit._Widget, dijit._Templated], {
+    widgetsInTemplate: true,
+    templateString: '<span>' +
+                    '  <li id="addImage" dojoAttachPoint="addImgButton">' +
+                    '    <a title="Add image"><span class="buttonicon buttonicon-addimage"></span></a>' +
+                    '  </li>' +
+                    '</span>',
+    startup: function () {
+      this.inherited(arguments);
+
+      if (typeof(AjaxUpload) != "undefined") {
+        var info = {  
+          action: '/fileUpload/',
+          name: 'uploadfile',  
+          onSubmit: function(file, ext){
+          },  
+          onComplete: function(file, response){
+            var path = response.replace(/^\s+|\s+$/g, '').split("/");
+            exports.addImg(path[path.length-1]);
+          }
+        };
+        new AjaxUpload($(this.addImgButton), info);  
+      }
+    }
+  });
+
+  args.widget.addTools.addChild(new ep_sketchspace_pdfbackground.DesignerUIMenuAddTools());
+
+  if (typeof(pad) != "undefined") {
     var info = {  
       action: '/fileUpload/',
-      name: 'uploadfile',  
+      name: 'uploadfile',
       onSubmit: function(file, ext){
       //console.log('Starting...');
       },  
       onComplete: function(file, response){
         var path = response.replace(/^\s+|\s+$/g, '').split("/");
-        exports.addImg(path[path.length-1]);
+	var filename = path[path.length-1];
+
+	dojo.xhrGet({
+	  url: "/imageConvert/" + filename + "?action=getPages",
+	  handleAs: "json",
+	  load: function(data){
+	    padeditor.ace.callWithAce(function (ace) {
+	      for (var page = 0; page < data.pages; page++) {
+
+		var imageId = sketchSpace.ace_insertImage(ace);
+		var rep = ace.ace_getRep();
+		ace.ace_performDocumentApplyAttributesToRange(rep.selStart, rep.selEnd, [["sketchSpaceImageObject:" + dojox.uuid.generateRandomUuid(), escape(dojo.toJson({parent:null, shape: {extType: "zimage", imageName: filename, page:page}}))]]);
+		ace.ace_performSelectionChange(rep.selEnd, rep.selEnd, false);
+
+	      }
+	    }, "sketchSpace", true)
+	  }
+	});
+
       }
-    };
-    new AjaxUpload($(args.widget.addImgButton), info);  
+    }
+
+    // FIXME:
+    new AjaxUpload($('.sketchSpaceAddPdfImage'), info);  
+    new AjaxUpload($('.sketchSpaceAddPdfImage span'), info);
   }
+
+
   cb();
 }
-
 
 exports.sketchspaceDeserializeShape_zimage = function (hook_name, args, cb) {
   var shape = exports.createImage(args.designer, args.parent, args.description.imageName, args.description.page);
