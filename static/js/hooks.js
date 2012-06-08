@@ -7,11 +7,11 @@ exports.sketchSpaceDesigner_designer_DesignerUI_startup = function (hook_name, a
 
   dojo.declare("ep_sketchspace_pdfbackground.DesignerUIMenuAddTools", [dijit._Widget, dijit._Templated], {
     widgetsInTemplate: true,
-    templateString: '<span>' +
+    templateString: '<ul>' +
                     '  <li id="addImage" dojoAttachPoint="addImgButton">' +
                     '    <a title="Add image"><span class="buttonicon buttonicon-addimage"></span></a>' +
-                    '  </li>' +
-                    '</span>',
+                    '  </<li>' +
+                    '</ul>',
     startup: function () {
       this.inherited(arguments);
 
@@ -31,7 +31,7 @@ exports.sketchSpaceDesigner_designer_DesignerUI_startup = function (hook_name, a
     }
   });
 
-  args.widget.addTools.addChild(new ep_sketchspace_pdfbackground.DesignerUIMenuAddTools());
+  args.ui.addTools.addChild(new ep_sketchspace_pdfbackground.DesignerUIMenuAddTools());
 
   if (typeof(pad) != "undefined") {
     var info = {  
